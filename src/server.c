@@ -1,12 +1,13 @@
 #include "socket.h"
 #include "third-party/duckdb/osx/duckdb.h"
 
-#define DBFILE_PATH "/Users/kaiwenzheng/Documents/csduck/inputs/tpch_lineitem_comment_sf1.db"
+#define CONNECTION_FROM "0.0.0.0"
+#define DBFILE_PATH "/users/zhengk30/csduck/inputs/tpch_lineitem_comment_sf1.db"
 
 void process_request(int client_sock);
 
 int main() {
-    int listen_fd = server_init(PORT, IPADDR);
+    int listen_fd = server_init(CONNECTION_FROM, IPADDR);
     printf("[server] listening on %d...\n", listen_fd);
     int client_sock = accept_connection(listen_fd);
     printf("[server] accepted connection from client %d\n", client_sock);
