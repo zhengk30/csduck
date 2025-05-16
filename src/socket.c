@@ -1,0 +1,92 @@
+#include "socket.h"
+
+/*******************************************
+*                helpers
+********************************************/
+int set_up_connetion(int port, const char* ip, struct sockaddr_in* peer) {
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        perror("socket");
+        exit(1);
+    }
+    peer->sin_family = AF_INET;
+    peer->sin_port = htons(port);
+    inet_pton(AF_INET, ip, &peer->sin_addr);
+    return sock;
+}
+
+void tear_down_connection(int server_sock) {
+    if (close(server_sock) < 0) {
+        perror("close");
+        exit(1);
+    }
+}
+
+/*******************************************
+*        client-specific functions
+********************************************/
+int client_init(int port, const char* ip) {
+    struct sockaddr_in server;
+    int server_sock = set_up_connetion(port, ip, &server);
+
+    printf("[client] trying to connect with the server %d...\n", server_sock);
+    if (connect(server_sock, (struct sockaddr *)&server, sizeof(server))) {
+        perror("connect");
+        close(server_sock);
+        exit(1);
+    }
+
+    return server_sock;
+}
+
+void client_send_query(int server_sock, const char* query) {
+    char buffer[BUF_SIZE] = {0};
+    memcpy(buffer, query, strlen(query));
+    if (send(server_sock, buffer, strlen(query), 0) < 0) {
+        perror("send");
+        close(server_sock);
+        exit(1);
+    }
+}
+
+int client_fetch_result(int server_sock) {
+    int result;
+    if (read(server_sock, &result, sizeof(int)) < 0) {
+        perror("read");
+        close(server_sock);
+        exit(1);
+    }
+    return result;
+}
+
+/*******************************************
+*        server-specific functions
+********************************************/
+int server_init(int port, const char* ip) {
+    struct sockaddr_in server;
+    int sockfd = set_up_connetion(port, ip, &server);
+    if (bind(sockfd, (struct sockaddr *)&server, sizeof(server))) {
+        perror("bind");
+        close(sockfd);
+        exit(1);
+    }
+    if (listen(sockfd, 1) < 0) {
+        perror("listen");
+        close(sockfd);
+        exit(1);
+    }
+    return sockfd;
+}
+
+int accept_connection(int listen_fd) {
+    struct sockaddr_in peer;
+    socklen_t peer_len = sizeof(peer);
+    int client_sock = accept(listen_fd, (struct sockaddr *)&peer, &peer_len);
+    if (client_sock < 0) {
+        perror("accept");
+        close(listen_fd);
+        return -1;
+    } else {
+        return client_sock;
+    }
+}
