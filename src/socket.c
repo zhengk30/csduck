@@ -39,26 +39,6 @@ int client_init(int port, const char* ip) {
     return server_sock;
 }
 
-void client_send_query(int server_sock, const char* query) {
-    char buffer[BUF_SIZE] = {0};
-    memcpy(buffer, query, strlen(query));
-    if (send(server_sock, buffer, strlen(query), 0) < 0) {
-        perror("send");
-        close(server_sock);
-        exit(1);
-    }
-}
-
-int client_fetch_result(int server_sock) {
-    int result;
-    if (read(server_sock, &result, sizeof(int)) < 0) {
-        perror("read");
-        close(server_sock);
-        exit(1);
-    }
-    return result;
-}
-
 /*******************************************
 *        server-specific functions
 ********************************************/
