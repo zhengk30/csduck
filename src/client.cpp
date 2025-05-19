@@ -17,6 +17,7 @@ int main() {
     auto end = chrono::high_resolution_clock::now();
     std::chrono::duration<double> rrt = end - start;
     printf("[client] %s --> %lu (RTT %f sec)\n", QUERY, result, rrt.count());
+
     tear_down_connection(server_sock);
     return 0;
 }

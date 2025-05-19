@@ -1,8 +1,8 @@
-project('csduck', 'c', default_options: ['warning_level=2'])
+project('csduck', 'cpp', default_options: ['warning_level=2'])
 
 ## Source files
-client_source_files = ['src/socket.c', 'src/client.c']
-server_source_files = ['src/socket.c', 'src/server.c']
+client_source_files = ['src/socket.cpp', 'src/client.cpp']
+server_source_files = ['src/socket.cpp', 'src/server.cpp']
 
 ## Dependencies
 duckdb_dep = declare_dependency(
