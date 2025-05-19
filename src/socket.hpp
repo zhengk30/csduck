@@ -1,14 +1,15 @@
-#ifndef SOCKET_H
-#define SOCKET_H
+#pragma once
 
-#include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <time.h>
 
-#define PORT 8080
+#define PORT 8000
 #define IPADDR "127.0.0.1"
 #define BUF_SIZE 1024
 
@@ -25,5 +26,3 @@ void tear_down_connection(int server_sock);
 // server-specific functions
 int server_init(int port, const char* ip);
 int accept_connection(int listen_fd);
-
-#endif

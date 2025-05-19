@@ -1,5 +1,4 @@
-#include "socket.h"
-#include <time.h>
+#include "socket.hpp"
 
 #define QUERY "SELECT COUNT(l_comment) FROM comment WHERE l_comment like '%regular%';"
 #define SERVER_IPADDR "128.110.216.206"
@@ -16,16 +15,16 @@ int main() {
     client_send_query(server_sock, QUERY);
     uint64_t result = client_fetch_result(server_sock);
     clock_t end = clock();
-    double duration = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("[client] %s --> %llu (%f sec)\n", QUERY, result, duration);
-    // tear_down_connection(server_sock);
+    double rrt = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("[client] %s --> %lu (RTT %f sec)\n", QUERY, result, rrt);
+    tear_down_connection(server_sock);
     return 0;
 }
 
 void client_send_query(int server_sock, const char* query) {
     char buffer[BUF_SIZE] = {0};
     memcpy(buffer, query, strlen(query));
-    if (send(server_sock, buffer, strlen(query), 0) < 0) {
+    if (write(server_sock, buffer, strlen(query)) < 0) {
         perror("send");
         close(server_sock);
         exit(1);
