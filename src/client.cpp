@@ -11,12 +11,12 @@ int main() {
     int server_sock = client_init(PORT, SERVER_IPADDR);
     printf("[client] server socket is %d, about to send a query to the server...\n", server_sock);
 
-    clock_t begin = clock();
+    auto start = chrono::high_resolution_clock::now();
     client_send_query(server_sock, QUERY);
     uint64_t result = client_fetch_result(server_sock);
-    clock_t end = clock();
-    double rrt = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("[client] %s --> %lu (RTT %f sec)\n", QUERY, result, rrt);
+    auto end = chrono::high_resolution_clock::now();
+    std::chrono::duration<double> rrt = end - start;
+    printf("[client] %s --> %lu (RTT %f sec)\n", QUERY, result, rrt.count());
     tear_down_connection(server_sock);
     return 0;
 }

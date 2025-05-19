@@ -54,16 +54,17 @@ void process_request(int client_sock, bool prof_brkdown_enabled) {
     }
     
     // execute query
-    clock_t begin = clock();
+    // clock_t begin = clock();
+    auto start = chrono::high_resolution_clock::now();
     state = duckdb_query(conn, query, &result);
     if (state == DuckDBError) {
         std::cerr << "DuckDBError: failed to execute query\n";
         close(client_sock);
         exit(1);
     }
-    clock_t end = clock();
-    double duration = (double)(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "[server] query execution duration: " << duration << " sec\n";
+    auto end = chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "[server] query execution duration: " << elapsed.count() << " sec\n";
 
     // retrive result from row 0, column 0 of the returned table
     uint64_t count = 0;

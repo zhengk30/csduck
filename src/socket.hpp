@@ -7,11 +7,13 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <time.h>
+#include <chrono>
 
 #define PORT 8000
 #define IPADDR "127.0.0.1"
 #define BUF_SIZE 1024
+
+using namespace std;
 
 // helpers
 int set_up_connetion(int port, const char* ip, struct sockaddr_in* peer);
