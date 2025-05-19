@@ -1,0 +1,96 @@
+#include "socket.hpp"
+#include "/users/zhengk30/csduck/third-party/duckdb/duckdb.h"
+#include <nlohmann/json.hpp>
+#include <fstream>
+
+using json = nlohmann::json;
+
+#define CONNECTION_FROM "0.0.0.0"
+#define DBFILE_PATH "/users/zhengk30/csduck/inputs/tpch_lineitem_comment_sf1.db"
+
+void process_request(int client_sock, bool prof_brkdown_enabled);
+
+int main(int argc, char** argv) {
+    bool prof_brkdown_enabled = false;
+    if (argc > 2) {
+        fprintf(stderr, "usage: build/server [prof_brkdown_enabled]\n");
+        exit(1);
+    } else if (argc == 2) {
+        prof_brkdown_enabled = atoi(argv[1]);
+    }
+    int listen_fd = server_init(PORT, CONNECTION_FROM);
+    std::cout << "[server] listening with fd " << listen_fd << " on port " << PORT << '\n'; 
+    int client_sock = accept_connection(listen_fd);
+    std::cout << "[server] accepted connection from client with fd " << client_sock << '\n';
+    process_request(client_sock, prof_brkdown_enabled);
+    tear_down_connection(listen_fd);
+    return 0;
+}
+
+void process_request(int client_sock, bool prof_brkdown_enabled) {
+    char query[BUF_SIZE];
+    int bytes_read = read(client_sock, query, BUF_SIZE);
+    if (bytes_read < 0) {
+        perror("read");
+        tear_down_connection(client_sock);
+        exit(1);
+    }
+    std::cout << "[server] received " << bytes_read << " bytes from client with fd " << client_sock << '\n';;
+
+    // connect to duckdb and run query
+    duckdb_database db;
+    duckdb_connection conn;
+    duckdb_state state;
+    duckdb_result result;
+    if (duckdb_open(DBFILE_PATH, &db) == DuckDBError) {
+        std::cerr << "DuckDBError: failed to open " << DBFILE_PATH << '\n';
+        tear_down_connection(client_sock);
+        exit(1);
+    }
+    if (duckdb_connect(db, &conn) == DuckDBError) {
+        std::cerr << "DuckDBError: failed to establish connection\n";
+        tear_down_connection(client_sock);
+        exit(1);
+    }
+    
+    // execute query
+    clock_t begin = clock();
+    state = duckdb_query(conn, query, &result);
+    if (state == DuckDBError) {
+        std::cerr << "DuckDBError: failed to execute query\n";
+        close(client_sock);
+        exit(1);
+    }
+    clock_t end = clock();
+    double duration = (double)(end - begin) / CLOCKS_PER_SEC;
+    std::cout << "[server] query execution duration: " << duration << " sec\n";
+
+    // retrive result from row 0, column 0 of the returned table
+    uint64_t count = 0;
+    if (duckdb_row_count(&result) > 0) {
+        count = duckdb_value_uint64(&result, 0, 0);
+    }
+    
+    // reply to client with count
+    int bytes_written = write(client_sock, &count, sizeof(uint64_t));
+    if (bytes_written < 0) {
+        perror("write");
+        tear_down_connection(client_sock);
+        exit(1);
+    }
+    duckdb_destroy_result(&result);
+    std::cout << "[server] replied with " << bytes_written << " bytes\n";
+
+    if (prof_brkdown_enabled) {
+        std::ifstream output("output.json");
+        json data = json::parse(output);
+        auto latency = data["latency"];
+        auto cpu_time = data["cpu_time"];
+        auto filter_cpu_time = data["children"][0]["operator_timing"];
+        auto scan_cpu_time = data["children"][0]["children"][0]["operator_timing"];
+        std::cout << "execution latency (e2e): " << latency << '\n';
+        std::cout << "execution latency (cpu): " << cpu_time << '\n';
+        std::cout << "filter operator latency: " << filter_cpu_time << '\n';
+        std::cout << "scan operator latency: " << scan_cpu_time << '\n';
+    }
+}
