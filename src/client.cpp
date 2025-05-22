@@ -7,16 +7,16 @@ void client_send_query(int server_sock, const char* query);
 int client_fetch_result(int server_sock);
 
 int main() {
-    printf("[client] setting up server's socket...\n");
+    std::cout << "[client] setting up server's socket...\n";
     int server_sock = client_init(PORT, SERVER_IPADDR);
-    printf("[client] server socket is %d, about to send a query to the server...\n", server_sock);
+    std::cout << "[client] server socket is " << server_sock << ", about to send a query to the server...\n";
 
     auto start = chrono::high_resolution_clock::now();
     client_send_query(server_sock, QUERY);
     uint64_t result = client_fetch_result(server_sock);
     auto end = chrono::high_resolution_clock::now();
     std::chrono::duration<double> rrt = end - start;
-    printf("[client] %s --> %lu (RTT %f sec)\n", QUERY, result, rrt.count());
+    std::cout << "[client] " << QUERY << " --> " << result << " (RRT " << rrt.count() << " sec)\n";
 
     tear_down_connection(server_sock);
     return 0;
