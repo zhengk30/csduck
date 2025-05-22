@@ -1,6 +1,9 @@
 #!/bin/bash
 
-so_path=/users/zhengk30/csduck/third-party/duckdb/
+common_path=/users/zhengk30/csduck/
+duckdb_path=/users/zhengk30/.duckdb/
+so_path=${common_path}third-party/duckdb/
+inputs_path=${common_path}inputs/
 
 ## Unzip DuckDB's C/C++ API
 cd third-party/duckdb
@@ -16,5 +19,13 @@ if ! [[ $LD_LIBRARY_PATH == *"$so_path"* ]]; then
 fi
 # echo "$LD_LIBRARY_PATH"
 
-## TODO: Create `inputs` directory 
+## Install DuckDB's CLI
+if ! [ -d "$duckdb_path" ]; then
+    curl https://install.duckdb.org | sh
+    export PATH='/users/zhengk30/.duckdb/cli/latest':$PATH
+fi
 
+## Create `inputs` directory if none exists
+if ! [ -d "$inputs_path" ]; then
+    mkdir $inputs_path
+fi
