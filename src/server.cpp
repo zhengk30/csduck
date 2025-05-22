@@ -90,10 +90,10 @@ void process_request(int client_sock, bool prof_brkdown_enabled) {
         auto aggregate_cpu_time = data["children"][0]["operator_timing"];
         auto filter_cpu_time = data["children"][0]["children"][0]["operator_timing"];
         auto scan_cpu_time = data["children"][0]["children"][0]["children"][0]["operator_timing"];
-        std::cout << "[server] execution latency (e2e): " << latency << '\n';
-        std::cout << "[server] execution latency (cpu): " << cpu_time << '\n';
-        std::cout << "[server] aggregate operator latency: " << aggregate_cpu_time << '\n';
-        std::cout << "[server] filter operator latency: " << filter_cpu_time << '\n';
+        std::cout << "[server] execution latency (e2e): " << latency << " sec\n";
+        std::cout << "[server] execution latency (cpu): " << cpu_time << " sec\n";
+        std::cout << "[server] aggregate operator latency: " << aggregate_cpu_time << " sec\n";
+        std::cout << "[server] filter operator latency: " << filter_cpu_time << " sec\n";
         std::cout << "[server] scan operator latency: " << scan_cpu_time << " sec\n";
     }
 }
