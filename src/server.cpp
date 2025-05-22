@@ -87,11 +87,13 @@ void process_request(int client_sock, bool prof_brkdown_enabled) {
         json data = json::parse(output);
         auto latency = data["latency"];
         auto cpu_time = data["cpu_time"];
-        auto filter_cpu_time = data["children"][0]["operator_timing"];
-        auto scan_cpu_time = data["children"][0]["children"][0]["operator_timing"];
-        std::cout << "execution latency (e2e): " << latency << '\n';
-        std::cout << "execution latency (cpu): " << cpu_time << '\n';
-        std::cout << "filter operator latency: " << filter_cpu_time << '\n';
-        std::cout << "scan operator latency: " << scan_cpu_time << '\n';
+        auto aggregate_cpu_time = data["children"][0]["operator_timing"];
+        auto filter_cpu_time = data["children"][0]["children"][0]["operator_timing"];
+        auto scan_cpu_time = data["children"][0]["children"][0]["children"][0]["operator_timing"];
+        std::cout << "[server] execution latency (e2e): " << latency << '\n';
+        std::cout << "[server] execution latency (cpu): " << cpu_time << '\n';
+        std::cout << "[server] aggregate operator latency: " << aggregate_cpu_time << '\n';
+        std::cout << "[server] filter operator latency: " << filter_cpu_time << '\n';
+        std::cout << "[server] scan operator latency: " << scan_cpu_time << " sec\n";
     }
 }
