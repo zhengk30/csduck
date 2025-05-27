@@ -1,3 +1,6 @@
 [submodule "third-party/json"]
 	path = third-party/json
 	url = https://github.com/nlohmann/json.git
+[submodule "third-party/duckdb-source"]
+	path = third-party/duckdb-source
+	url = https://github.com/zhengk30/duckdb.git
