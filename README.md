@@ -23,4 +23,5 @@ This project aims to evaluate DuckDB's query execution performance under the sce
 
 ### Notes
 - To manually configure dependencies individually, refer to the guides under `docs/`.
+- If you want to speed up DuckDB's compilation, run `make -j$(nproc)`.
 
