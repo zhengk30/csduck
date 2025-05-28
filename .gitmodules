@@ -4,3 +4,4 @@
 [submodule "third-party/duckdb-source"]
 	path = third-party/duckdb-source
 	url = https://github.com/zhengk30/duckdb.git
+	branch = v1.2.1
