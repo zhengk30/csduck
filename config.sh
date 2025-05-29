@@ -6,7 +6,6 @@ duckdb_cli_path=/users/zhengk30/.duckdb/cli/latest
 
 so_path=${common_path}third-party/duckdb/
 inputs_path=${common_path}inputs/
-db_file_path=${common_path}inputs/comment_sf1.db
 duckdb_api_path=${comment_path}third-party/duckdb
 
 ## Unzip DuckDB's C/C++ API
@@ -35,12 +34,4 @@ fi
 ## Create `inputs` directory if none exists
 if ! [ -d "$inputs_path" ]; then
     mkdir $inputs_path
-fi
-
-## Create a database file if none exists
-if ! [ -e "$db_file_path" ]; then
-    gcc dbgen.c -o dbgen -L${duckdb_api_path} -lduckdb
-    ./dbgen
-    rm -f comment_sf1.csv
-    rm -f dbgen
 fi
