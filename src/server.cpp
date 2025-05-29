@@ -6,7 +6,7 @@
 using json = nlohmann::json;
 
 #define CONNECTION_FROM "0.0.0.0"
-#define DBFILE_PATH "/users/zhengk30/csduck/inputs/tpch_lineitem_comment_sf1.db"
+#define DBFILE_PATH "/users/zhengk30/csduck/inputs/comment_sf5.db"
 
 void process_request(int client_sock, bool prof_brkdown_enabled);
 
@@ -53,8 +53,11 @@ void process_request(int client_sock, bool prof_brkdown_enabled) {
         exit(1);
     }
     
+    if (prof_brkdown_enabled) {
+        duckdb_query(conn, "PRAGMA enable_profiling='json';", NULL);
+        duckdb_query(conn, "PRAGMA profiling_output='output.json';", NULL);
+    }
     // execute query
-    // clock_t begin = clock();
     auto start = chrono::high_resolution_clock::now();
     state = duckdb_query(conn, query, &result);
     if (state == DuckDBError) {
