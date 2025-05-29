@@ -8,6 +8,7 @@ This project aims to evaluate DuckDB's query execution performance under the sce
 ### Dependencies
 - Nlohmann JSON parser
 - DuckDB's C/C++ API
+- DuckDB command-line interface
 
 ### Setup
 - In `csduck/src/client.cpp`, modify the `SERVER_IPADDR` macro to the IP address of the machine that hosts DuckDB.
@@ -21,6 +22,6 @@ This project aims to evaluate DuckDB's query execution performance under the sce
   - On the client side, run `./run.sh client`.
 
 ### Notes
-- If you wish to create input database files, create `csduck/inputs/` folder and dump the database files there.
-- To configure required dependencies, refer to the guides under `docs/`.
+- To manually configure dependencies individually, refer to the guides under `docs/`.
+- If you want to speed up DuckDB's compilation, run `make -j$(nproc)`.
 
