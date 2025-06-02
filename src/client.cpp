@@ -1,7 +1,7 @@
 #include "socket.hpp"
 
 #define QUERY "SELECT COUNT(l_comment) FROM comment WHERE l_comment like '%regular%';"
-#define SERVER_IPADDR "128.110.216.206"
+#define SERVER_IPADDR "128.110.216.201"
 
 void client_send_query(int server_sock, const char* query);
 int client_fetch_result(int server_sock);
