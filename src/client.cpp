@@ -11,6 +11,10 @@ int main() {
     int server_sock = client_init(PORT, SERVER_IPADDR);
     std::cout << "[client] server socket is " << server_sock << ", about to send a query to the server...\n";
 
+    uint64_t checksum;
+    assert(read(server_sock, &checksum, sizeof(uint64_t)) >= 0);
+    assert(checksum == 0xdeadbeef);
+    
     auto start = chrono::high_resolution_clock::now();
     client_send_query(server_sock, QUERY);
     uint64_t result = client_fetch_result(server_sock);
